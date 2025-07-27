@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - PopcornHour{% endblock %}
+
+{% block content %}
+<h1 style="text-align: center; color: #2c3e50; margin-bottom: 10px;">¡Tu Cine en Casa!</h1>
+<p style="text-align: center; font-size: 1.2em; color: #555; max-width: 800px; margin: 0 auto 40px;">
+    Descubre, califica y únete a la conversación sobre miles de películas y series.
+</p>
+
+<h2 style="margin-top: 30px; color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px;">🎬 Películas Destacadas</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 25px; justify-content: center; padding-bottom: 50px;">
+    {% for movie in movies %}
+    <div style="background-color: white; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.15); overflow: hidden; width: 260px; text-align: center; transition: transform 0.2s ease-in-out;">
+        <img src="{{ movie.poster }}" alt="Póster de {{ movie.title }}" 
+             style="width: 100%; height: 380px; object-fit: cover; border-bottom: 2px solid #eee; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+        <div style="padding: 20px;">
+            <h3 style="margin-top: 0; margin-bottom: 10px; color: #2c3e50; font-size: 1.3em;">{{ movie.title }}</h3>
+            <p style="font-size: 0.95em; color: #666; margin-bottom: 8px;">Año: {{ movie.release_year if movie.release_year else 'N/A' }}</p>
+            <p style="font-size: 1em; color: #f39c12; font-weight: bold; margin-bottom: 15px;">⭐ Calificación: {{ movie.rating if movie.rating else 'N/A' }}</p>
+            <div style="margin-bottom: 15px;">
+                {% if movie.genres %}
+                    {% for genre in movie.genres %}
+                        <span style="background-color: #ecf0f1; color: #34495e; padding: 4px 8px; border-radius: 20px; font-size: 0.8em; margin: 2px; display: inline-block;">
+                            {{ genre }}
+                        </span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <a href="#" style="background-color: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 7px; cursor: pointer; font-size: 1em; text-decoration: none; display: inline-block; transition: background-color 0.3s ease;">
+                Ver Detalles
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
