@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+{% block title %}{{ movie.title }} - Detalles{% endblock %}
+
+{% block content %}
+<div class="movie-detail-container">
+    <div class="movie-header">
+        <img src="{{ movie.poster_url }}" alt="Póster de {{ movie.title }}" class="movie-poster">
+        <div class="movie-info">
+            <h1>{{ movie.title }} <span class="release-year">({{ movie.release_year }})</span></h1>
+            <p class="movie-description">{{ movie.description }}</p>
+            <p class="movie-genres">Géneros: 
+                {% for genre in movie.genres %}
+                    <span class="genre-tag">{{ genre.name }}</span>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <div class="rating-display">
+                {% if movie.average_rating is not none %}
+                    <span class="rating-score">{{ "%.1f" | format(movie.average_rating) }}</span> ⭐
+                    <span class="rating-count">({{ movie.ratings|length }} calificaciones)</span>
+                {% else %}
+                    <span class="rating-score">N/A</span> ⭐
+                    <span class="rating-count">(Sin calificaciones)</span>
+                {% endif %}
+            </div>
+            {% if movie.trailer_url %}
+                <a href="{{ movie.trailer_url }}" target="_blank" class="btn btn-trailer">Ver Tráiler</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="rating-section">
+        <h2>Calificar Película</h2>
+        {% if current_user.is_authenticated %}
+            {% if user_has_rated %}
+                <p class="info-message">Ya calificaste esta película con **{{ existing_rating.score }}** estrellas. Puedes cambiar tu calificación.</p>
+            {% else %}
+                <p class="info-message">Aún no has calificado esta película. ¡Danos tu opinión!</p>
+            {% endif %}
+            <form method="POST" action="{{ url_for('main.rate_movie', movie_id=movie.id) }}" class="rating-form">
+                {{ rating_form.hidden_tag() }}
+                <div class="form-group rating-stars">
+                    {{ rating_form.score.label(class="form-label") }}
+                    {{ rating_form.score(class="form-control-rating") }}
+                    {% if rating_form.score.errors %}
+                        <ul class="errors">
+                            {% for error in rating_form.score.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ rating_form.submit_rating(class="btn btn-primary") }}
+                </div>
+            </form>
+        {% else %}
+            <p class="info-message">Por favor <a href="{{ url_for('main.login') }}" class="inline-link">inicia sesión</a> para calificar esta película.</p>
+        {% endif %}
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="comments-section">
+        <h2>Comentarios ({{ movie.comments|length }})</h2>
+        {% if current_user.is_authenticated %}
+            <form method="POST" action="{{ url_for('main.add_comment', movie_id=movie.id) }}" class="comment-form">
+                {{ comment_form.hidden_tag() }}
+                <div class="form-group">
+                    {{ comment_form.content.label(class="form-label") }}
+                    {{ comment_form.content(class="form-control textarea", rows="4", placeholder="Escribe tu comentario...") }}
+                    {% if comment_form.content.errors %}
+                        <ul class="errors">
+                            {% for error in comment_form.content.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ comment_form.submit_comment(class="btn btn-primary") }}
+                </div>
+            </form>
+        {% else %}
+            <p class="info-message">Por favor <a href="{{ url_for('main.login') }}" class="inline-link">inicia sesión</a> para dejar un comentario.</p>
+        {% endif %}
+
+        <div class="comment-list">
+            {% if movie.comments %}
+                {% for comment in movie.comments|sort(attribute='timestamp', reverse=true) %}
+                <div class="comment-card">
+                    <p class="comment-meta">
+                        <strong>{{ comment.author.username }}</strong> en 
+                        {{ comment.timestamp.strftime('%d/%m/%Y a las %H:%M') }}
+                    </p>
+                    <p class="comment-content">{{ comment.content }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="info-message">Sé el primero en comentar esta película.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{# Estilos específicos para la página de detalle de película #}
+<style>
+    .movie-detail-container {
+        background-color: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        max-width: 900px;
+        margin: 50px auto;
+        text-align: left;
+    }
+    .movie-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+    .movie-poster {
+        width: 250px;
+        height: 375px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        flex-shrink: 0; /* Evita que la imagen se encoja */
+        object-fit: cover; /* Asegura que la imagen se vea bien en el tamaño */
+    }
+    .movie-info h1 {
+        color: #2c3e50;
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+        line-height: 1.2;
+    }
+    .movie-info .release-year {
+        font-size: 0.7em;
+        color: #7f8c8d;
+        font-weight: normal;
+    }
+    .movie-description {
+        color: #34495e;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+    .movie-genres {
+        margin-bottom: 15px;
+    }
+    .genre-tag {
+        display: inline-block;
+        background-color: #3498db;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.9em;
+        margin-right: 8px;
+        margin-bottom: 5px;
+    }
+    .rating-display {
+        font-size: 1.5em;
+        color: #f39c12; /* Naranja para la calificación */
+        margin-bottom: 20px;
+    }
+    .rating-score {
+        font-weight: bold;
+        margin-right: 5px;
+    }
+    .rating-count {
+        font-size: 0.7em;
+        color: #7f8c8d;
+    }
+    .btn-trailer {
+        background-color: #e74c3c; /* Rojo */
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-decoration: none; /* Para enlaces */
+        display: inline-block; /* Para que funcione el padding */
+    }
+    .btn-trailer:hover {
+        background-color: #c0392b;
+    }
+
+    .section-divider {
+        border: 0;
+        height: 1px;
+        background-color: #ddd;
+        margin: 40px 0;
+    }
+
+    /* Estilos para formularios de calificación y comentarios */
+    .rating-section, .comments-section {
+        margin-top: 30px;
+    }
+    .rating-section h2, .comments-section h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 1.8em;
+        text-align: center;
+    }
+    .rating-form, .comment-form {
+        margin-bottom: 30px;
+        text-align: left;
+    }
+    .form-control-rating {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1em;
+        box-sizing: border-box;
+    }
+    .info-message {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 0.95em;
+    }
+    .inline-link {
+        color: #3498db;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .inline-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Comentarios */
+    .comment-list {
+        margin-top: 30px;
+    }
+    .comment-card {
+        background-color: #f9f9f9;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .comment-meta {
+        font-size: 0.9em;
+        color: #7f8c8d;
+        margin-bottom: 8px;
+    }
+    .comment-content {
+        font-size: 1em;
+        color: #34495e;
+    }
+</style>
+{% endblock %}

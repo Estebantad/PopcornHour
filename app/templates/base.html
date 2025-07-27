@@ -93,11 +93,11 @@
             {# Si el usuario está autenticado, muestra enlaces de perfil/logout #}
             {% if current_user.is_authenticated %}
                 <a href="#">Hola, {{ current_user.username }}</a>
-                <a href="{{ url_for('main.logout') }}">Cerrar Sesión</a>
-                {# Aquí puedes añadir enlaces condicionales para moderadores #}
+                {# Enlace para añadir película, SOLO si el usuario es moderador #}
                 {% if current_user.role == 'moderator' %}
-                    <a href="#">Admin Películas</a> {# Futura ruta para moderadores #}
+                    <a href="{{ url_for('main.add_movie') }}">Añadir Película</a> 
                 {% endif %}
+                <a href="{{ url_for('main.logout') }}">Cerrar Sesión</a>
             {% else %}
                 {# Si no está autenticado, muestra enlaces de login/registro #}
                 <a href="{{ url_for('main.login') }}">Iniciar Sesión</a>

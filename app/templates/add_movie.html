@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Añadir Película - PopcornHour{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="form-title">Añadir Nueva Película</h2>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.title.label(class="form-label") }}
+            {{ form.title(class="form-control") }}
+            {% if form.title.errors %}
+                <ul class="errors">
+                    {% for error in form.title.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.description.label(class="form-label") }}
+            {{ form.description(class="form-control textarea") }}
+            {% if form.description.errors %}
+                <ul class="errors">
+                    {% for error in form.description.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.release_year.label(class="form-label") }}
+            {{ form.release_year(class="form-control") }}
+            {% if form.release_year.errors %}
+                <ul class="errors">
+                    {% for error in form.release_year.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.poster_url.label(class="form-label") }}
+            {{ form.poster_url(class="form-control") }}
+            {% if form.poster_url.errors %}
+                <ul class="errors">
+                    {% for error in form.poster_url.errors %}
+                        <li>{{ error | safe }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.trailer_url.label(class="form-label") }}
+            {{ form.trailer_url(class="form-control") }}
+            {% if form.trailer_url.errors %}
+                <ul class="errors">
+                    {% for error in form.trailer_url.errors %}
+                        <li>{{ error | safe }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.genres.label(class="form-label") }}
+            {{ form.genres(class="form-control") }}
+            <small style="display: block; margin-top: 5px; color: #7f8c8d;">Ej: Acción, Drama, Ciencia Ficción</small>
+            {% if form.genres.errors %}
+                <ul class="errors">
+                    {% for error in form.genres.errors %}
+                        <li>{{ error | safe }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</div>
+
+{# Estilos específicos para este formulario, reutilizando los de register/login #}
+<style>
+    .form-container {
+        background-color: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        max-width: 600px; /* Un poco más ancho para el formulario de película */
+        margin: 50px auto;
+        text-align: center;
+    }
+    .form-title {
+        color: #2c3e50;
+        margin-bottom: 30px;
+        font-size: 2em;
+    }
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #34495e;
+    }
+    .form-control {
+        width: calc(100% - 20px);
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1em;
+        box-sizing: border-box; /* Para incluir padding en el width */
+    }
+    .form-control.textarea {
+        min-height: 100px; /* Altura mínima para el área de texto */
+        resize: vertical; /* Permitir redimensionar verticalmente */
+    }
+    .form-control:focus {
+        border-color: #3498db;
+        outline: none;
+        box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    }
+    .btn-primary {
+        background-color: #3498db;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .btn-primary:hover {
+        background-color: #2980b9;
+    }
+    .errors {
+        color: #e74c3c;
+        list-style-type: none;
+        padding: 0;
+        margin-top: 5px;
+        font-size: 0.9em;
+    }
+</style>
+{% endblock %}

@@ -15,29 +15,43 @@
     </p>
 {% endif %}
 
-<h2 style="margin-top: 30px; color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px;">🎬 Películas Destacadas</h2>
+<h2 style="margin-top: 30px; color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px;">🎬 Películas Disponibles</h2>
+
+{# Mostrar mensaje si no hay películas reales #}
+{% if not movies %}
+    <p style="text-align: center; color: #7f8c8d; font-style: italic; margin-bottom: 30px;">
+        Actualmente no hay películas en la base de datos. ¡Regístrate como moderador y sube la primera!
+    </p>
+{% endif %}
+
 <div style="display: flex; flex-wrap: wrap; gap: 25px; justify-content: center; padding-bottom: 50px;">
-    {% for movie in movies %}
+    {% for movie_data in movies %}
     <div style="background-color: white; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.15); overflow: hidden; width: 260px; text-align: center; transition: transform 0.2s ease-in-out;">
-        <img src="{{ movie.poster }}" alt="Póster de {{ movie.title }}" 
-             style="width: 100%; height: 380px; object-fit: cover; border-bottom: 2px solid #eee; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-        <div style="padding: 20px;">
-            <h3 style="margin-top: 0; margin-bottom: 10px; color: #2c3e50; font-size: 1.3em;">{{ movie.title }}</h3>
-            <p style="font-size: 0.95em; color: #666; margin-bottom: 8px;">Año: {{ movie.release_year if movie.release_year else 'N/A' }}</p>
-            <p style="font-size: 1em; color: #f39c12; font-weight: bold; margin-bottom: 15px;">⭐ Calificación: {{ movie.rating if movie.rating else 'N/A' }}</p>
-            <div style="margin-bottom: 15px;">
-                {% if movie.genres %}
-                    {% for genre in movie.genres %}
-                        <span style="background-color: #ecf0f1; color: #34495e; padding: 4px 8px; border-radius: 20px; font-size: 0.8em; margin: 2px; display: inline-block;">
-                            {{ genre }}
+        <a href="{{ url_for('main.movie_detail', movie_id=movie_data.id) }}" style="text-decoration: none; color: inherit;">
+            <img src="{{ movie_data.poster_url if movie_data.poster_url else 'https://placehold.co/250x375/cccccc/333333?text=Póster+No+Disp.' }}" 
+                 alt="Póster de {{ movie_data.title }}" 
+                 style="width: 100%; height: 380px; object-fit: cover; border-bottom: 2px solid #eee; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+            <div style="padding: 20px;">
+                <h3 style="margin-top: 0; margin-bottom: 10px; color: #2c3e50; font-size: 1.3em;">{{ movie_data.title }}</h3>
+                <p style="font-size: 0.95em; color: #666; margin-bottom: 8px;">Año: {{ movie_data.release_year if movie_data.release_year else 'N/A' }}</p>
+                <p style="font-size: 1em; color: #f39c12; font-weight: bold; margin-bottom: 15px;">
+                    ⭐ Calificación: {{ movie_data.avg_rating if movie_data.avg_rating is not none else 'N/A' }}
+                </p>
+                <div style="margin-bottom: 15px;">
+                    {% if movie_data.genres %}
+                        {% for genre in movie_data.genres %}
+                            <span style="background-color: #ecf0f1; color: #34495e; padding: 4px 8px; border-radius: 20px; font-size: 0.8em; margin: 2px; display: inline-block;">
+                                {{ genre.name }} {# Accede al nombre del género desde el objeto Genre #}
+                            </span>
+                        {% endfor %}
+                    {% else %}
+                        <span style="background-color: #ecf0f1; color: #7f8c8d; padding: 4px 8px; border-radius: 20px; font-size: 0.8em; margin: 2px; display: inline-block;">
+                            Sin Género
                         </span>
-                    {% endfor %}
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
-            <a href="#" style="background-color: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 7px; cursor: pointer; font-size: 1em; text-decoration: none; display: inline-block; transition: background-color 0.3s ease;">
-                Ver Detalles
-            </a>
-        </div>
+        </a>
     </div>
     {% endfor %}
 </div>
