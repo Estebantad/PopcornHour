@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from app import db, bcrypt # Importamos db y bcrypt
 from app.models import Movie, User # Importamos los modelos necesarios
-from app.forms import RegistrationForm, LoginForm # Importamos los nuevos formularios
+from app.forms import RegistrationForm, LoginForm # Importamos los formularios
+from flask_login import login_user, current_user, logout_user, login_required # Nuevos imports
 
 main = Blueprint('main', __name__)
 
@@ -57,29 +58,42 @@ def home():
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
+    # Si el usuario ya está logueado, redirigir a la página de inicio
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+    
     form = RegistrationForm()
-    if form.validate_on_submit(): # Si el formulario es enviado y es válido
-        # Hashear la contraseña antes de guardarla en la base de datos
+    if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        # Crear un nuevo usuario con rol 'standard' por defecto
         user = User(username=form.username.data, email=form.email.data, password_hash=hashed_password, role='standard')
-        db.session.add(user) # Añadir el usuario a la sesión de la base de datos
-        db.session.commit() # Guardar los cambios en la base de datos
-        flash('¡Tu cuenta ha sido creada exitosamente! Ahora puedes iniciar sesión.', 'success') # Mensaje de éxito
-        return redirect(url_for('main.login')) # Redirigir a la página de inicio de sesión
+        db.session.add(user)
+        db.session.commit()
+        flash('¡Tu cuenta ha sido creada exitosamente! Ahora puedes iniciar sesión.', 'success')
+        return redirect(url_for('main.login'))
     return render_template('register.html', title='Registro', form=form)
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
+    # Si el usuario ya está logueado, redirigir a la página de inicio
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+
     form = LoginForm()
-    if form.validate_on_submit(): # Si el formulario es enviado y es válido
-        user = User.query.filter_by(email=form.email.data).first() # Buscar usuario por email
-        # Verificar si el usuario existe y la contraseña es correcta
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password_hash, form.password.data):
-            # Aquí iría la lógica para iniciar sesión al usuario (sesiones de Flask)
-            # Esto lo haremos en Checkpoint 4
-            flash('¡Inicio de sesión exitoso! (Aún no hay persistencia de sesión)', 'success')
-            return redirect(url_for('main.home')) # Redirigir a la página de inicio
+            login_user(user) # Función de Flask-Login para iniciar sesión al usuario
+            flash(f'¡Bienvenido de nuevo, {user.username}!', 'success')
+            return redirect(url_for('main.home'))
         else:
-            flash('Inicio de sesión fallido. Por favor, verifica tu email y contraseña.', 'danger') # Mensaje de error
+            flash('Inicio de sesión fallido. Por favor, verifica tu email y contraseña.', 'danger')
     return render_template('login.html', title='Iniciar Sesión', form=form)
+
+@main.route('/logout')
+@login_required # Requiere que el usuario esté logueado para acceder
+def logout():
+    logout_user() # Función de Flask-Login para cerrar sesión al usuario
+    flash('Has cerrado tu sesión.', 'info')
+    return redirect(url_for('main.home'))
+
+# Puedes añadir más rutas aquí en el futuro (ej. movie_detail, add_movie, etc.)

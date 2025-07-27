@@ -1,14 +1,14 @@
 from app import db # Importa la instancia de SQLAlchemy desde tu __init__.py
 from datetime import datetime # Para registrar la fecha y hora de creacion/modificacion
+from flask_login import UserMixin # Nuevo import
 
 # Tabla intermedia para la relación muchos a muchos entre películas y géneros
-# Una película puede tener múltiples géneros y un género puede aplicarse a múltiples películas
 movie_genre = db.Table('movie_genre',
     db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), primary_key=True),
     db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'), primary_key=True)
 )
 
-class User(db.Model):
+class User(db.Model, UserMixin): # Modificado para heredar de UserMixin
     __tablename__ = 'users' # Nombre de la tabla en PostgreSQL
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False, index=True) # Nombre de usuario único
@@ -31,7 +31,7 @@ class Movie(db.Model):
     title = db.Column(db.String(255), nullable=False, index=True) # Título de la película, indexado para búsquedas
     description = db.Column(db.Text, nullable=True) # Descripción detallada de la película
     release_year = db.Column(db.Integer, nullable=True) # Año de lanzamiento
-    poster_url = db.Column(db.String(500), nullable=True) # URL del póster de la película
+    poster_url = db.Column(db.String(500), nullable=True) # URL del póster (usaremos placeholders aquí)
     trailer_url = db.Column(db.String(500), nullable=True) # URL opcional del tráiler
 
     # Relaciones con otras tablas:
@@ -39,7 +39,7 @@ class Movie(db.Model):
     ratings = db.relationship('Rating', backref='movie_rated', lazy=True, cascade='all, delete-orphan')
     # Una película puede tener muchos comentarios
     comments = db.relationship('Comment', backref='movie_commented', lazy=True, cascade='all, delete-orphan')
-    # Relación muchos a muchos con Genre a través de la tabla movie_genre
+    # Relación muchos a muchos con Genre
     genres = db.relationship('Genre', secondary=movie_genre, lazy='subquery',
                              backref=db.backref('movies', lazy=True))
 

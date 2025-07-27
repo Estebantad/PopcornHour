@@ -8,6 +8,13 @@
     Descubre, califica y únete a la conversación sobre miles de películas y series.
 </p>
 
+{# Mensaje dinámico para el usuario logueado #}
+{% if current_user.is_authenticated %}
+    <p style="text-align: center; font-size: 1.1em; color: #28a745; font-weight: bold; margin-bottom: 30px;">
+        ¡Hola, {{ current_user.username }}! Has iniciado sesión. 🎉
+    </p>
+{% endif %}
+
 <h2 style="margin-top: 30px; color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px;">🎬 Películas Destacadas</h2>
 <div style="display: flex; flex-wrap: wrap; gap: 25px; justify-content: center; padding-bottom: 50px;">
     {% for movie in movies %}
