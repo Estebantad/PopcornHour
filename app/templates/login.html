@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Iniciar Sesión - PopcornHour{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="form-title">¡Bienvenido de Nuevo!</h2>
+    {# Mostrar mensajes flash #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form method="POST" action="">
+        {{ form.hidden_tag() }} {# Campo oculto para protección CSRF #}
+        <div class="form-group">
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-control") }}
+            {% if form.email.errors %}
+                <ul class="errors">
+                    {% for error in form.email.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-control") }}
+            {% if form.password.errors %}
+                <ul class="errors">
+                    {% for error in form.password.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+    <p class="form-link">¿No tienes una cuenta? <a href="{{ url_for('main.register') }}">Regístrate aquí</a></p>
+</div>
+
+{# Los estilos CSS para el formulario ya están en base.html o puedes copiarlos aquí si prefieres #}
+<style>
+    /* Asegúrate de que los estilos del formulario de register.html se apliquen aquí también */
+    /* Puedes copiarlos directamente o refactorizarlos a un archivo CSS externo */
+    .form-container {
+        background-color: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        max-width: 500px;
+        margin: 50px auto;
+        text-align: center;
+    }
+    .form-title {
+        color: #2c3e50;
+        margin-bottom: 30px;
+        font-size: 2em;
+    }
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #34495e;
+    }
+    .form-control {
+        width: calc(100% - 20px);
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1em;
+        box-sizing: border-box;
+    }
+    .form-control:focus {
+        border-color: #3498db;
+        outline: none;
+        box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    }
+    .btn-primary {
+        background-color: #3498db;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .btn-primary:hover {
+        background-color: #2980b9;
+    }
+    .errors {
+        color: #e74c3c;
+        list-style-type: none;
+        padding: 0;
+        margin-top: 5px;
+        font-size: 0.9em;
+    }
+    .form-link {
+        margin-top: 25px;
+        font-size: 1em;
+        color: #555;
+    }
+    .form-link a {
+        color: #3498db;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .form-link a:hover {
+        text-decoration: underline;
+    }
+    .flash-message {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        font-size: 1.1em;
+        text-align: center;
+    }
+    .flash-message.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    .flash-message.danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>
+{% endblock %}

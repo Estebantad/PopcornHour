@@ -67,8 +67,8 @@
     <nav class="navbar">
         <a href="{{ url_for('main.home') }}" class="logo">🍿 PopcornHour</a>
         <div>
-            <a href="#">Iniciar Sesión</a>
-            <a href="#">Registrarse</a>
+            <a href="{{ url_for('main.login') }}">Iniciar Sesión</a> {# Enlace al login #}
+            <a href="{{ url_for('main.register') }}">Registrarse</a> {# Enlace al registro #}
             <!-- Aquí irán enlaces para el perfil o moderador cuando el usuario esté logueado -->
         </div>
     </nav>
